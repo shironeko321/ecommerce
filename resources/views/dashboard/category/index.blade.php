@@ -43,7 +43,11 @@
                                     <td>{{ $item->name }}</td>
                                     <td>
                                         <a href="{{ route('category.edit', ['category' => $item->id]) }}" class="btn btn-warning btn-sm">Edit</a>
-                                        <a href="" class="btn btn-danger btn-sm">Delete</a>
+                                        <form action="{{ route('category.destroy', ['category' => $item->id]) }}"  style="display: inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach
