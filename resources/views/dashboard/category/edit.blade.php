@@ -43,16 +43,38 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('category.edit', ['category' => $item->id]) }}" method="post">
+                    <form action="{{ route('category.update', ['category' => $category->id]) }}" method="post" enctype="multipart/form-data">
                         @csrf
-                        @method('PATCH')
+                        @method('PUT')
                         <div class="row mb-3">
                             <label for="name" class="col-sm-2 col-form-label">Name</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" name="name" id="name"
-                                    value="{{ $item->name }}">
+                                    value="{{ $category->name }}">
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <label for="cover" class="col-sm-2 col-form-label" accept=".jpg, .png, .jpeg">Cover</label>
+                            <div class="col-sm-10">
+                                <input type="file" class="form-control" name="cover" id="cover">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">Sub Category</label>
+                            <div class="col-sm-10">
+                                <select class="form-select" aria-label="Sub Category" name="category_id">
+                                    @if ($category->category_id != null)
+                                    <option value="null" selected>Tidak Ada</option>
+                                    @foreach ($categories as $item)
+                                        <option value="{{ $item->id }}" {{ ($item->id == $category->category_parent->id) ? 'selected' : '' }} >{{ $item->name }}</option>
+                                    @endforeach
+                                  @else
+                                    <option value="null" selected>Tidak Ada</option>
+                                @endif
+                              </select>
+                            </div>
+                          </div>
                         <button type="submit" class="btn btn-primary float-end">Edit</button>
                     </form>
                 </div>

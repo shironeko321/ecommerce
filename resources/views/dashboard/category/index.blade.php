@@ -41,7 +41,10 @@
                                 <tr>
                                     <th>{{ $loop->iteration }}</th>
                                     <td>{{ $item->name }}</td>
-                                    <td></td>
+                                    <td>
+                                        <a href="{{ route('category.edit', ['category' => $item->id]) }}" class="btn btn-warning btn-sm">Edit</a>
+                                        <a href="" class="btn btn-danger btn-sm">Delete</a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
