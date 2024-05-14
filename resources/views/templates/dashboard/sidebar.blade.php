@@ -26,6 +26,13 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a @class(['nav-link', 'collapsed' => !request()->routeIs('product.*')]) href="{{ route('product.index') }}">
+                <i class="bi bi-bag"></i>
+                <span>Product</span>
+            </a>
+        </li>
+
     </ul>
 
 </aside>

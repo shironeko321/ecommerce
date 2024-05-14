@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,7 @@ Route::prefix('dashboard')->group(function () {
     })->middleware(['auth', 'verified'])->name('dashboard');
 
     Route::resource('category', CategoryController::class);
+    Route::resource('product', ProductController::class);
 });
 
 
