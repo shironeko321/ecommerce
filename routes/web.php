@@ -27,6 +27,7 @@ Route::prefix('dashboard')->group(function () {
 
     Route::resource('category', CategoryController::class);
     Route::resource('product', ProductController::class);
+    Route::post('/product/images', [ProductController::class, 'storeMedia'])->name('product.storeMedia');
 });
 
 

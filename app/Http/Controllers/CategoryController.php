@@ -81,7 +81,7 @@ class CategoryController extends Controller
 
         $category = Category::findOrFail($id);
         if($request->hasFile('cover')) {
-            $filePath = storage_path().'/image/'. $category['cover'];
+            $filePath = storage_path().'/images/'. $category['cover'];
             if(Storage::exists($filePath)) {
                 unlink($filePath);
             }
