@@ -17,30 +17,14 @@ class ProductController extends Controller
         return view('dashboard.product.index', ['collection' => Product::paginate(10)]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $category = Category::all();
         return view('dashboard.product.create', compact('category'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        if(!$request->missing('delete')) {
-            foreach($request->delete as $delete) {
-                $filePath = storage_path().'/images/'. $delete;
-                Storage::delete('/public/images/'.$delete);
-                dd($filePath);
-                // if(Storage::exists($filePath)) {
-                //     Storage::delete($filePath);
-                // }
-            }
-        }
         $price = str_replace( array( '\'', '"',',' , ';', '<', '>', '.' ), '', $request->price);
 
         $product = Product::create(([
@@ -58,12 +42,9 @@ class ProductController extends Controller
             ]);
         }
 
-        if ($request->input('delete')) {
+        if(!$request->missing('delete')) {
             foreach($request->delete as $delete) {
-                $filePath = storage_path().'/images/'. $delete;
-                if(Storage::exists($filePath)) {
-                    Storage::delete($filePath);
-                }
+                Storage::delete('/public/images/'.$delete);
             }
         }
 
@@ -71,41 +52,63 @@ class ProductController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(int $id)
     {
-        //
+        $product = Product::with('media')->findOrFail($id);
+        $category = Category::all();
+
+        return view('dashboard.product.edit', compact('product', 'category'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        //
+        $product = Product::findOrFail($id);
+
+        $price = str_replace( array( '\'', '"',',' , ';', '<', '>', '.' ), '', $request->price);
+        $product->update([
+            'name' => $request->name,
+            'details' => $request->details,
+            'price' => $price,
+            'quantity' => $request->quantity,
+            'category_id' => $request->category_id
+        ]);
+
+        if(!$request->missing('media')) {
+            foreach($request->media as $media) {
+                Media::create([
+                    'file_name' => $media,
+                    'product_id' => $product->id
+                ]);
+            }
+        }
+
+        if(!$request->missing('delete')) {
+            foreach($request->delete as $delete) {
+                Storage::delete('/public/images/'.$delete);
+            }
+        }
+
+        return redirect()->route('product.index')->with('msg', 'Success Update Product');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        //
+
+        $product = Product::findOrFail($id);
+        Media::where('product_id', $product->id)->delete();
+        $product->delete();
+
+        return redirect()->route('product.index')->with('msg', 'Success Delete Product');
     }
 
     public function storeMedia(Request $request)
     {
-        $path = storage_path('app/images');
+        $path = storage_path('app/public/images');
 
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
@@ -119,21 +122,11 @@ class ProductController extends Controller
             'name' => $fileName,
             'original_name' => $file->getClientOriginalName(),
         ]);
-    //     $path = storage_path('app/images');
+    }
 
-    // if (!file_exists($path)) {
-    //     mkdir($path, 0777, true);
-    // }
-
-    // $file = $request->file('file');
-
-    // $name = uniqid() . '_' . trim($file->getClientOriginalName());
-
-    // $file->move($path, $name);
-
-    // return response()->json([
-    //     'name'          => $name,
-    //     'original_name' => $file->getClientOriginalName(),
-    // ]);
+    public function getEditMedia(int $id)
+    {
+        $media = Media::findOrFail($id);
+        return response()->json($media);
     }
 }

@@ -21,6 +21,11 @@ class Product extends Model
         'category_id'
     ];
 
+    public function media()
+    {
+        return $this->hasMany(Media::class);
+    }
+
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()->generateSlugsFrom('name')->saveSlugsTo('slug');
