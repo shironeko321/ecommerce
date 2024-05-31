@@ -43,6 +43,12 @@
 </head>
 
 <body>
+  <!-- ======= Header ======= -->
+  @include('templates.dashboard.header')
+  <!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  @include('templates.dashboard.sidebar')
 
   @yield('main')
 

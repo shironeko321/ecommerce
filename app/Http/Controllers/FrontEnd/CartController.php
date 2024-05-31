@@ -5,42 +5,41 @@ namespace App\Http\Controllers\FrontEnd;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    private $userId = Auth::user()->id;
-
     public function index()
     {
-        $cart = Cart::where('user_id', $this->userId)->get();
+        $userId = Auth::user()->id;
 
-        return view('dashboard.forntend.cart.index', compact('cart'));
+        // relasi cart ke product ke media
+        $cart = Cart::with('product.media')->where('user_id', $userId)->get();
+
+        return view('home.cart', ['cart' => $cart]);
     }
-    public function store(Request $request, int $cartId)
+
+    public function store(Request $request, int $product)
     {
         //ambil jumlah yang dibeli
-        $quantity = $request->quantity;
+        $quantity = $request->validate([
+            'quantity' => 'required|numeric'
+        ])['quantity'];
 
-        // $userId = Auth::user()->id;
-        $cart = Cart::where('product_id', $cartId)->first();
+        $userId = Auth::user()->id;
+        $product = Product::find($product)->first();
 
-        if ($this->userId == $cart['user_id'] && $cartId == $cart['product_id']) {
-            $quantity += $cart['quantity'];
+        // param 1 cari kalau tidak ketemu buat baru
+        Cart::updateOrCreate([
+            'product_id' => $product->id,
+            'user_id' => $userId
+        ], [
+            'product_id' => $product->id,
+            'user_id' => $userId,
+            'quantity' => $quantity,
+        ]);
 
-            $cart->update([
-                'quantity' => $quantity
-            ]);
-        } else {
-            Cart::create([
-                'quantity' => $quantity,
-                'product_id' => $cart,
-                'user_id' => $this->userId
-            ]);
-        }
-
-        return redirect()->refresh();
-
+        return redirect()->back();
     }
-
 }

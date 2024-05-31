@@ -11,9 +11,8 @@ class Media extends Model
 
     protected $fillable = [
         'file_name',
-        'file_type',
-        'file_size',
+        // 'file_type',
+        // 'file_size',
         'product_id',
     ];
-
 }

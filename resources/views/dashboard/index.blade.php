@@ -1,14 +1,6 @@
 @extends('layouts.dashboard')
 
 @section('main')
-  <!-- ======= Header ======= -->
-  @include('templates.dashboard.header')
-  <!-- End Header -->
-
-  <!-- ======= Sidebar ======= -->
-  @include('templates.dashboard.sidebar')
-  <!-- End Sidebar-->
-
   <main id="main" class="main">
 
     <div class="pagetitle">

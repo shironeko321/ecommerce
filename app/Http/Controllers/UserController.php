@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class CartController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return view('dashboard.users.index', ['collection' => User::role('user')->get()]);
     }
 
     /**
@@ -34,7 +34,7 @@ class CartController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Cart $cart)
+    public function show(User $user)
     {
         //
     }
@@ -42,7 +42,7 @@ class CartController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Cart $cart)
+    public function edit(User $user)
     {
         //
     }
@@ -50,7 +50,7 @@ class CartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Cart $cart)
+    public function update(Request $request, User $user)
     {
         //
     }
@@ -58,7 +58,7 @@ class CartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Cart $cart)
+    public function destroy(User $user)
     {
         //
     }

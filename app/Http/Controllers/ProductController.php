@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Media;
 use App\Models\Product;
 use App\Models\Category;
@@ -23,33 +24,28 @@ class ProductController extends Controller
         return view('dashboard.product.create', compact('category'));
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $price = str_replace( array( '\'', '"',',' , ';', '<', '>', '.' ), '', $request->price);
+        $request->validated();
 
-        $product = Product::create(([
-            'name' => $request->name,
-            'details' => $request->details,
-            'price' => $price,
-            'quantity' => $request->quantity,
-            'category_id' => $request->category_id
-        ]));
+        $data = $request->safe()->except(['media']);
+        $data['price'] = str_replace(array('\'', '"', ',', ';', '<', '>', '.'), '', $data['price']);
 
-        foreach($request->media as $media) {
-            Media::create([
-                'file_name' => $media,
-                'product_id' => $product->id
+        $product = Product::create($data);
+
+        foreach ($request->media as $media) {
+            $product->media()->create([
+                'file_name' => $media
             ]);
         }
 
-        if(!$request->missing('delete')) {
-            foreach($request->delete as $delete) {
-                Storage::delete('/public/images/'.$delete);
+        if (!$request->missing('delete')) {
+            foreach ($request->delete as $delete) {
+                Storage::delete('/public/images/' . $delete);
             }
         }
 
         return redirect()->route('product.index')->with('msg', 'Success Create Product');
-
     }
 
     public function show(string $id)
@@ -65,31 +61,28 @@ class ProductController extends Controller
         return view('dashboard.product.edit', compact('product', 'category'));
     }
 
-    public function update(Request $request, int $id)
+    public function update(ProductRequest $request, int $id)
     {
+        $request->validated();
+
         $product = Product::findOrFail($id);
 
-        $price = str_replace( array( '\'', '"',',' , ';', '<', '>', '.' ), '', $request->price);
-        $product->update([
-            'name' => $request->name,
-            'details' => $request->details,
-            'price' => $price,
-            'quantity' => $request->quantity,
-            'category_id' => $request->category_id
-        ]);
+        $data = $request->safe()->except(['media']);
+        $data['price'] = str_replace(array('\'', '"', ',', ';', '<', '>', '.'), '', $data['price']);
 
-        if(!$request->missing('media')) {
-            foreach($request->media as $media) {
-                Media::create([
-                    'file_name' => $media,
-                    'product_id' => $product->id
+        $product->update($data);
+
+        if (!$request->missing('media')) {
+            foreach ($request->media as $media) {
+                $product->media()->create([
+                    'file_name' => $media
                 ]);
             }
         }
 
-        if(!$request->missing('delete')) {
-            foreach($request->delete as $delete) {
-                Storage::delete('/public/images/'.$delete);
+        if (!$request->missing('delete')) {
+            foreach ($request->delete as $delete) {
+                Storage::delete('/public/images/' . $delete);
             }
         }
 
@@ -115,7 +108,7 @@ class ProductController extends Controller
         }
 
         $file = $request->file('file');
-        $fileName = strtolower(Str::random(10) . '_' . Carbon::now()->timestamp. '_' . trim($file->getClientOriginalName()) );
+        $fileName = strtolower(Str::random(10) . '_' . Carbon::now()->timestamp . '_' . trim($file->getClientOriginalName()));
         $file->move($path, $fileName);
 
         return response()->json([

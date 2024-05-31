@@ -14,12 +14,21 @@ class Product extends Model
     protected $fillable = [
         'name',
         'slug',
-        'description',
         'details',
         'price',
         'quantity',
         'category_id'
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function cart()
+    {
+        return $this->hasMany(Cart::class);
+    }
 
     public function media()
     {
